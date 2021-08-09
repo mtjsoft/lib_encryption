@@ -1,5 +1,6 @@
 package cn.mtjsoft.www.myencryptiondemo.rsa;
 
+import java.io.ByteArrayOutputStream;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -80,7 +81,7 @@ public class RSAUtil {
             // 编码前设定编码方式及密钥
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             // 传入编码数据并返回编码结果
-            return cipher.doFinal(data);
+            return segmented(data, cipher, true);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -99,7 +100,7 @@ public class RSAUtil {
             // 编码前设定编码方式及密钥
             cipher.init(Cipher.ENCRYPT_MODE, privateKey);
             // 传入编码数据并返回编码结果
-            return cipher.doFinal(data);
+            return segmented(data, cipher, true);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -116,7 +117,7 @@ public class RSAUtil {
         try {
             Cipher cipher = Cipher.getInstance(RSA_PADDING);
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
-            return cipher.doFinal(encryptedData);
+            return segmented(encryptedData, cipher, false);
         } catch (Exception e) {
             return null;
         }
@@ -132,7 +133,7 @@ public class RSAUtil {
         try {
             Cipher cipher = Cipher.getInstance(RSA_PADDING);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            return cipher.doFinal(encryptedData);
+            return segmented(encryptedData, cipher, false);
         } catch (Exception e) {
             return null;
         }
@@ -198,5 +199,41 @@ public class RSAUtil {
         signature.initVerify(publicKey);
         signature.update(srcData);
         return signature.verify(signBytes);
+    }
+
+    /**
+     * 分段加解密
+     *
+     * @param data      待加解密的数据
+     * @param isEncrypt 是否是加密，否则是解密
+     */
+    private static byte[] segmented(byte[] data, Cipher cipher, boolean isEncrypt) throws Exception {
+        int inputLen = data.length;
+        // 不够分段加密条件，直接进行一次性加密返回
+        if (isEncrypt && inputLen <= MAX_ENCRYPT_BLOCK) {
+            return cipher.doFinal(data);
+        }
+        // 不够分段解密条件，直接进行一次性解密返回
+        if (!isEncrypt && inputLen <= MAX_DECRYPT_BLOCK) {
+            return cipher.doFinal(data);
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int offset = 0;
+        byte[] cache;
+        int i = 0;
+        int maxLen = isEncrypt ? MAX_ENCRYPT_BLOCK : MAX_DECRYPT_BLOCK;
+        // 对数据分段加密
+        while (inputLen - offset > 0) {
+            if (inputLen - offset > maxLen) {
+                cache = cipher.doFinal(data, offset, maxLen);
+            } else {
+                cache = cipher.doFinal(data, offset, inputLen - offset);
+            }
+            out.write(cache, 0, cache.length);
+            i++;
+            offset = i * maxLen;
+        }
+        out.close();
+        return out.toByteArray();
     }
 }
