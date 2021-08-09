@@ -57,6 +57,21 @@ public class SHAUtil {
         }
     }
 
+    public static String stringSHA1(byte[] inputByteArray) {
+        try {
+            // 拿到一个SHA1
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+            // inputByteArray是输入字符串转换得到的字节数组
+            messageDigest.update(inputByteArray);
+            // 转换并返回结果，也是字节数组，包含16个元素
+            byte[] resultByteArray = messageDigest.digest();
+            // 字符数组转换成字符串返回
+            return Util.byte2HexStr(resultByteArray);
+        } catch (NoSuchAlgorithmException e) {
+            return "";
+        }
+    }
+
     /**
      * 计算文件SHA1值
      */

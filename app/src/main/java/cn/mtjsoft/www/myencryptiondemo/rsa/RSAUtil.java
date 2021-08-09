@@ -113,7 +113,7 @@ public class RSAUtil {
      * @param encryptedData 经过加密数据
      * @param publicKey     公钥
      */
-    public static byte[] decryptByPrivateKey(byte[] encryptedData, PublicKey publicKey) {
+    public static byte[] decryptByPublicKeyKey(byte[] encryptedData, PublicKey publicKey) {
         try {
             Cipher cipher = Cipher.getInstance(RSA_PADDING);
             cipher.init(Cipher.DECRYPT_MODE, publicKey);

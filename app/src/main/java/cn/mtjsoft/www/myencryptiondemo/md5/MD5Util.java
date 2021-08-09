@@ -55,6 +55,21 @@ public class MD5Util {
         }
     }
 
+    public static String stringMD5(byte[] inputByteArray) {
+        try {
+            // 拿到一个MD5转换器（如果想要SHA1参数换成”SHA1”）
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            // inputByteArray是输入字符串转换得到的字节数组
+            messageDigest.update(inputByteArray);
+            // 转换并返回结果，也是字节数组，包含16个元素
+            byte[] resultByteArray = messageDigest.digest();
+            // 字符数组转换成字符串返回
+            return Util.byte2HexStr(resultByteArray);
+        } catch (NoSuchAlgorithmException e) {
+            return "";
+        }
+    }
+
     /**
      * 计算文件MD5值
      */
