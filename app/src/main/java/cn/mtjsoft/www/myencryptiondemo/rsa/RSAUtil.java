@@ -5,6 +5,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
 
 import javax.crypto.Cipher;
 
@@ -12,21 +13,43 @@ import javax.crypto.Cipher;
  * @author mtj
  * @date 2021/8/6
  * @desc 非对称加密算法。
+ *
+ * 加密：防止消息泄露
+ * 签名：防止消息篡改
+ * （总结：公钥加密、私钥解密、私钥签名、公钥验签）
  * @email mtjsoft3@gmail.com
  */
 public class RSAUtil {
     private static final String RSA = "RSA";
 
+    /**
+     * 填充方式
+     */
     private static final String RSA_NO_PADDING = "RSA/ECB/NoPadding";
 
     private static final String RSA_PADDING = "RSA/ECB/PKCS1Padding";
 
-    // 密钥长度
+    /**
+     * 签名方式
+     */
+    private static final String SIGN_MD5withRSA = "MD5withRSA";
+
+    private static final String SIGN_SHA256WithRSA = "SHA256WithRSA";
+
+    /**
+     * 密钥长度
+     */
     private static final int DEFAULT_KEY_SIZE = 2048;
 
-    // 当前秘钥支持加密的最大字节数
-    // 待加密的字节数不能超过密钥的长度值除以 8 再减去 11（即：KeySize / 8 - 11），而加密后得到密文的字节数，正好是密钥的长度值除以 8（即：KeySize / 8）
-    private static final int DEFAULT_BUFFERSIZE = (DEFAULT_KEY_SIZE / 8) - 11;
+    /**
+     * 待解密的字节数不能超过密钥的长度值除以 8 （即：KeySize / 8 ）
+     */
+    private static final int MAX_DECRYPT_BLOCK = DEFAULT_KEY_SIZE / 8;
+
+    /**
+     * 待加密的字节数不能超过密钥的长度值除以 8 再减去 11（即：KeySize / 8 - 11）
+     */
+    private static final int MAX_ENCRYPT_BLOCK = MAX_DECRYPT_BLOCK - 11;
 
     /**
      * 随机生成RSA密钥对
@@ -113,5 +136,67 @@ public class RSAUtil {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * SHA256
+     * 用私钥签名
+     *
+     * @param bytes      待签名数据
+     * @param privateKey 私钥
+     * @return 结果
+     */
+    public static byte[] signWithSHA256(byte[] bytes, PrivateKey privateKey) throws Exception {
+        Signature signature = Signature.getInstance(SIGN_SHA256WithRSA);
+        signature.initSign(privateKey);
+        signature.update(bytes);
+        return signature.sign();
+    }
+
+    /**
+     * SHA256
+     * 用公钥验签
+     *
+     * @param srcData   原始数据
+     * @param signBytes 签名数据
+     * @param publicKey 公钥
+     * @return 结果
+     */
+    public static boolean verifySignWithSHA256(byte[] srcData, byte[] signBytes, PublicKey publicKey) throws Exception {
+        Signature signature = Signature.getInstance(SIGN_SHA256WithRSA);
+        signature.initVerify(publicKey);
+        signature.update(srcData);
+        return signature.verify(signBytes);
+    }
+
+    /**
+     * MD5
+     * 用私钥签名
+     *
+     * @param bytes      待签名数据
+     * @param privateKey 私钥
+     * @return 结果
+     */
+    public static byte[] signWithMD5(byte[] bytes, PrivateKey privateKey) throws Exception {
+        Signature signature = Signature.getInstance(SIGN_MD5withRSA);
+        signature.initSign(privateKey);
+        signature.update(bytes);
+        return signature.sign();
+    }
+
+    /**
+     * MD5
+     * 用公钥验签
+     *
+     * @param srcData   原始数据
+     * @param signBytes 签名数据
+     * @param publicKey 公钥
+     * @return 结果
+     */
+    public static boolean verifySignWithMD5(byte[] srcData, byte[] signBytes, PublicKey publicKey) throws Exception {
+        Signature signature = Signature.getInstance(SIGN_MD5withRSA);
+        signature.initVerify(publicKey);
+        signature.update(srcData);
+        return signature.verify(signBytes);
     }
 }
