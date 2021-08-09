@@ -1,14 +1,19 @@
 package cn.mtjsoft.www.myencryptiondemo.rsa;
 
 import java.io.ByteArrayOutputStream;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
+
+import cn.mtjsoft.www.myencryptiondemo.base64.Base64Util;
 
 /**
  * @author mtj
@@ -67,6 +72,38 @@ public class RSAUtil {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 通过公钥byte[](publicKey.getEncoded())将公钥还原，适用于RSA算法
+     *
+     * @param publicKeys 公钥byte[]，(publicKey.getEncoded())
+     */
+    public static PublicKey getPublicKey(byte[] publicKeys) {
+        try {
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeys);
+            KeyFactory keyFactory = KeyFactory.getInstance(RSA);
+            return keyFactory.generatePublic(keySpec);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 通过私钥byte[]将私钥还原，适用于RSA算法
+     *
+     * @param privateKeys 私钥byte[]，(privateKey.getEncoded())
+     */
+    public static PrivateKey getPrivateKey(byte[] privateKeys) {
+        try {
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeys);
+            KeyFactory keyFactory = KeyFactory.getInstance(RSA);
+            return keyFactory.generatePrivate(keySpec);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
