@@ -37,13 +37,18 @@ import cn.mtjsoft.www.myencryptiondemo.utils.Util;
  * 安全访问认证
  */
 public class SHAUtil {
+
+    public static final String SHA1 = "SHA-1";
+
+    public static final String SHA256 = "SHA-256";
+
     /**
      * 计算字符串SHA1值
      */
-    public static String stringSHA1(String input) {
+    public static String stringSHA(String input, String shaType) {
         try {
             // 拿到一个SHA1
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+            MessageDigest messageDigest = MessageDigest.getInstance(shaType);
             // 输入的字符串转换成字节数组
             byte[] inputByteArray = input.getBytes();
             // inputByteArray是输入字符串转换得到的字节数组
@@ -57,10 +62,10 @@ public class SHAUtil {
         }
     }
 
-    public static String stringSHA1(byte[] inputByteArray) {
+    public static String stringSHA(byte[] inputByteArray, String shaType) {
         try {
             // 拿到一个SHA1
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+            MessageDigest messageDigest = MessageDigest.getInstance(shaType);
             // inputByteArray是输入字符串转换得到的字节数组
             messageDigest.update(inputByteArray);
             // 转换并返回结果，也是字节数组，包含16个元素
@@ -75,7 +80,7 @@ public class SHAUtil {
     /**
      * 计算文件SHA1值
      */
-    public static String getSHA1ByFile(File file) {
+    public static String getSHAByFile(File file, String shaType) {
         String result = "";
         if (!file.isFile()) {
             return result;
@@ -85,7 +90,7 @@ public class SHAUtil {
         byte[] buffer = new byte[1024];
         int len;
         try {
-            digest = MessageDigest.getInstance("SHA1");
+            digest = MessageDigest.getInstance(shaType);
             in = new FileInputStream(file);
             while ((len = in.read(buffer, 0, 1024)) != -1) {
                 digest.update(buffer, 0, len);
@@ -104,7 +109,7 @@ public class SHAUtil {
      *
      * 采用nio的方式
      */
-    public static String getSHA1ByFileNio(File file) {
+    public static String getSHAByFileNio(File file, String shaType) {
         String result = "";
         if (!file.isFile()) {
             return result;
@@ -113,7 +118,7 @@ public class SHAUtil {
         try {
             in = new FileInputStream(file);
             MappedByteBuffer byteBuffer = in.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-            MessageDigest md5 = MessageDigest.getInstance("SHA1");
+            MessageDigest md5 = MessageDigest.getInstance(shaType);
             md5.update(byteBuffer);
             result = Util.byte2HexStr(md5.digest());
         } catch (Exception e) {

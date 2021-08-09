@@ -48,7 +48,8 @@ class ExampleUnitTest {
     fun shaTest() {
         val dataString = "我是测试shaTest明文"
         println("明文：$dataString")
-        println("sha1摘要: ${SHAUtil.stringSHA1(dataString)}")
+        println("sha1摘要: ${SHAUtil.stringSHA(dataString, SHAUtil.SHA1)}")
+        println("sha256摘要: ${SHAUtil.stringSHA(dataString, SHAUtil.SHA256)}")
     }
 
     @Test
