@@ -5,6 +5,7 @@ import cn.mtjsoft.www.myencryptiondemo.BASE64.Base64Util
 import cn.mtjsoft.www.myencryptiondemo.MD5.MD5Util
 import cn.mtjsoft.www.myencryptiondemo.RSA.RSAUtil
 import cn.mtjsoft.www.myencryptiondemo.SHA.SHAUtil
+import cn.mtjsoft.www.myencryptiondemo.SM2.SM2Util
 import cn.mtjsoft.www.myencryptiondemo.SM3.SM3Util
 import cn.mtjsoft.www.myencryptiondemo.SM4.SM4Util
 import cn.mtjsoft.www.myencryptiondemo.utils.Util
@@ -102,6 +103,25 @@ class ExampleUnitTest {
     fun sm2Test() {
         val dataString = "我是测试sm2Test明文"
         println("明文：$dataString")
+
+        val key = SM2Util.generateKeyPair()
+        val publicKey = key[0]
+        val privateKey = key[1]
+
+        println("公钥：" + Util.byte2HexStr(publicKey))
+        println("私钥：" + Util.byte2HexStr(privateKey))
+
+        val encryptByPublicKey = SM2Util.encrypt(publicKey, dataString.toByteArray())
+        println("公钥加密明文：" + Util.byte2HexStr(encryptByPublicKey))
+        println("私钥解密：" + String(SM2Util.decrypt(privateKey, encryptByPublicKey)))
+
+        val sign = SM2Util.sign(privateKey, encryptByPublicKey)
+        println("签名：" + Util.byte2HexStr(sign))
+        val verifySign = SM2Util.verifySign(publicKey, encryptByPublicKey, sign)
+        println("验签：$verifySign")
+
+        println("验证私钥：" + SM2Util.isValidPrivateKey(privateKey))
+        println("从私钥推导公钥：" + Util.byte2HexStr(SM2Util.getPublicKeyFromPrivateKey(privateKey)))
     }
 
     /**
@@ -125,12 +145,12 @@ class ExampleUnitTest {
         val key = SM4Util.createSM4Key()
         println("密钥：" + Util.byte2HexStr(key))
 
-        val encryptCBC = SM4Util.encryptCBC(dataString.toByteArray(), key)
+        val encryptCBC = SM4Util.encrypt(dataString.toByteArray(), key, SM4Util.SM4_CBC_PKCS5, ByteArray(16))
         println("CBC加密：${Util.byte2HexStr(encryptCBC)}")
-        println("CBC解密：${String(SM4Util.decryptCBC(encryptCBC, key))}")
+        println("CBC解密：${String(SM4Util.decrypt(encryptCBC, key, SM4Util.SM4_CBC_PKCS5, ByteArray(16)))}")
 
-        val encryptECB = SM4Util.encryptECB(dataString.toByteArray(), key)
+        val encryptECB = SM4Util.encrypt(dataString.toByteArray(), key, SM4Util.SM4_ECB_PKCS5, null)
         println("ECB加密：${Util.byte2HexStr(encryptECB)}")
-        println("ECB解密：${String(SM4Util.decryptECB(encryptECB, key))}")
+        println("ECB解密：${String(SM4Util.decrypt(encryptECB, key, SM4Util.SM4_ECB_PKCS5, null))}")
     }
 }

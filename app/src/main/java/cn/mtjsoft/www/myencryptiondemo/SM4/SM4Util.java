@@ -1,6 +1,12 @@
 package cn.mtjsoft.www.myencryptiondemo.SM4;
 
-import java.security.SecureRandom;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import cn.mtjsoft.www.myencryptiondemo.utils.Util;
 
 /**
  * @author mtj
@@ -14,149 +20,58 @@ import java.security.SecureRandom;
  * SM4分组密码算法是我国自主设计的分组对称密码算法
  */
 public class SM4Util {
-    /* 使用CBC模式，需要一个向量iv，可增加加密算法的强度 */
-    private static final String PARAMETER_SPEC = "1234567890123456";
+    public static final String SM4_CBC_NOPADDING = "SM4/CBC/NoPadding";
 
-    private static final boolean isPadding = true;
+    public static final String SM4_CBC_PKCS5 = "SM4/CBC/PKCS5Padding";
 
-    /**
-     * ECB 模式，加密
-     *
-     * @param cipherBytes 原始数据
-     * @param keyBytes    秘钥，长度 = 16
-     * @return 加密后的数据，Base64处理过的，可能为null
-     */
-    public static byte[] encryptECB(byte[] cipherBytes, byte[] keyBytes) {
-        return encryptECBInner(cipherBytes, keyBytes);
+    public static final String SM4_ECB_NOPADDING = "SM4/ECB/NoPadding";
+
+    public static final String SM4_ECB_PKCS5 = "SM4/ECB/PKCS5Padding";
+
+    private static final BouncyCastleProvider BC_PROVIDER = new BouncyCastleProvider();
+
+    private SM4Util() {
+        throw new UnsupportedOperationException("util class cant be instantiation");
     }
 
     /**
-     * ECB 模式，解密
-     *
-     * @param cipherBytes 加密的数据
-     * @param keyBytes    秘钥，长度 = 16
-     * @return 解密后的数据，可能为null
-     */
-    public static byte[] decryptECB(byte[] cipherBytes, byte[] keyBytes) {
-        return decryptECBInner(cipherBytes, keyBytes);
-    }
-
-    /**
-     * CBC 模式，加密
-     *
-     * @param cipherBytes 原始数据
-     * @param keyBytes    秘钥，长度 = 16
-     * @return 加密后的数据
-     */
-    public static byte[] encryptCBC(byte[] cipherBytes, byte[] keyBytes) {
-        return encryptCBCInner(cipherBytes, keyBytes, new byte[16]);
-    }
-
-    /**
-     * CBC 模式，解密
-     *
-     * @param cipherBytes 加密的数据
-     * @param keyBytes    秘钥，长度 = 16
-     * @return 解密后的数据，可能为null
-     */
-    public static byte[] decryptCBC(byte[] cipherBytes, byte[] keyBytes) {
-        return decryptCBCInner(cipherBytes, keyBytes, new byte[16]);
-    }
-
-    /**
-     * 随机生成一个 SM4 秘钥
-     *
-     * @return 字符流，长度为16
+     * 获取随机密钥
      */
     public static byte[] createSM4Key() {
-        return createSM4KeyInner();
+        return Util.genRandomBytes(16);
     }
 
-    /* ------------------------ 内部实现 ----------------------- */
-
-    /**
-     * 随机生成一个 SM4 秘钥
-     *
-     * @return byte数组，长度为16
-     */
-    private static byte[] createSM4KeyInner() {
-        byte[] keyBytes = new byte[16];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(keyBytes);
-        return keyBytes;
+    public static byte[] encrypt(byte[] source, byte[] key) {
+        return encrypt(source, key, SM4_CBC_PKCS5, (byte[]) null);
     }
 
-    /**
-     * CBC 模式，加密
-     *
-     * @param srcBytes 原始数据
-     * @param keyBytes 秘钥，长度 = 16
-     * @param ivBytes  偏移量，长度 = 16
-     * @return 加密后的数据
-     */
-    private static byte[] encryptCBCInner(byte[] srcBytes, byte[] keyBytes, byte[] ivBytes) {
+    public static byte[] decrypt(byte[] source, byte[] key) {
+        return decrypt(source, key, SM4_CBC_PKCS5, (byte[]) null);
+    }
+
+    public static byte[] encrypt(byte[] source, byte[] key, String mode, byte[] iv) {
+        return doSM4(true, source, key, mode, iv);
+    }
+
+    public static byte[] decrypt(byte[] source, byte[] key, String mode, byte[] iv) {
+        return doSM4(false, source, key, mode, iv);
+    }
+
+    private static byte[] doSM4(boolean forEncryption, byte[] source, byte[] key, String mode, byte[] iv) {
         try {
-            SM4 sm4 = new SM4();
-            long[] secretKey = sm4.sm4_setkey_enc(keyBytes);
-            return sm4.sm4_crypt_cbc(SM4.SM4_ENCRYPT, secretKey, isPadding, ivBytes, srcBytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * CBC 模式，解密
-     *
-     * @param encryptedBytes 加密后的数据
-     * @param keyBytes       秘钥，长度 = 16
-     * @param ivBytes        偏移量，长度 = 16
-     * @return 解密后的数据
-     */
-    private static byte[] decryptCBCInner(byte[] encryptedBytes, byte[] keyBytes, byte[] ivBytes) {
-        try {
-            SM4 sm4 = new SM4();
-            long[] secretKey = sm4.sm4_setkey_dec(keyBytes);
-            return sm4.sm4_crypt_cbc(SM4.SM4_DECRYPT, secretKey, isPadding, ivBytes, encryptedBytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * ECB 模式，加密
-     *
-     * @param srcBytes 原始数据
-     * @param keyBytes 秘钥，长度 = 16
-     * @return 加密后的数据
-     */
-    private static byte[] encryptECBInner(byte[] srcBytes, byte[] keyBytes) {
-        try {
-            SM4 sm4 = new SM4();
-            long[] secretKey = sm4.sm4_setkey_enc(keyBytes);
-            return sm4.sm4_crypt_ecb(SM4.SM4_ENCRYPT, secretKey, isPadding, srcBytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * ECB 模式，解密
-     *
-     * @param encryptBytes 加密后的数据
-     * @param keyBytes     秘钥，长度 = 16
-     * @return 解密后的数据
-     */
-    private static byte[] decryptECBInner(byte[] encryptBytes, byte[] keyBytes) {
-        try {
-            SM4 sm4 = new SM4();
-            long[] secretKey = sm4.sm4_setkey_dec(keyBytes);
-            return sm4.sm4_crypt_ecb(SM4.SM4_DECRYPT, secretKey, isPadding, encryptBytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            int cryptMode = forEncryption ? 1 : 2;
+            SecretKeySpec sm4Key = new SecretKeySpec(key, "SM4");
+            Cipher cipher = Cipher.getInstance(mode, BC_PROVIDER);
+            if (iv == null) {
+                cipher.init(cryptMode, sm4Key);
+            } else {
+                IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+                cipher.init(cryptMode, sm4Key, ivParameterSpec);
+            }
+            return cipher.doFinal(source);
+        } catch (Exception var9) {
+            var9.printStackTrace();
+            return new byte[0];
         }
     }
 }

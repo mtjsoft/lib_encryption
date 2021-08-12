@@ -1,11 +1,12 @@
 package cn.mtjsoft.www.myencryptiondemo.SM3;
 
+import org.bouncycastle.crypto.digests.SM3Digest;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.security.MessageDigest;
 
 import cn.mtjsoft.www.myencryptiondemo.utils.Util;
 
@@ -24,14 +25,14 @@ public class SM3Util {
     /**
      * SM3 加密
      *
-     * @param sourceBytes 原始数组
+     * @param source 原始数组
      * @return 加密后的，32位数组
      */
-    public static byte[] encryptInner(byte[] sourceBytes) {
-        SM3Digest digest = new SM3Digest();
-        digest.update(sourceBytes, 0, sourceBytes.length);
+    public static byte[] encryptInner(byte[] source) {
         byte[] result = new byte[32];
-        digest.doFinal(result, 0);
+        SM3Digest sm3 = new SM3Digest();
+        sm3.update(source, 0, source.length);
+        sm3.doFinal(result, 0);
         return result;
     }
 
