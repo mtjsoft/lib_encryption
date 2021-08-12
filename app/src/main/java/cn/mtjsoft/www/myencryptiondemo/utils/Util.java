@@ -1,5 +1,7 @@
 package cn.mtjsoft.www.myencryptiondemo.utils;
 
+import android.text.TextUtils;
+
 import java.util.Locale;
 import java.util.Random;
 
@@ -17,6 +19,9 @@ public class Util {
      * @return 转换后的byte[]
      */
     public static byte[] hexStr2Bytes(String hexStr) {
+        if (TextUtils.isEmpty(hexStr)) {
+            return null;
+        }
         /*对输入值进行规范化整理*/
         hexStr = hexStr.trim().replace(" ", "").toUpperCase(Locale.US);
         //处理值初始化
@@ -40,6 +45,9 @@ public class Util {
      * @return 转换后的十六进制字符串
      */
     public static String byte2HexStr(byte[] bytes) {
+        if (bytes == null) {
+            return "";
+        }
         StringBuilder hs = new StringBuilder();
         String stmp = "";
         for (byte aByte : bytes) {

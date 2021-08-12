@@ -1,4 +1,4 @@
-package cn.mtjsoft.www.myencryptiondemo.rsa;
+package cn.mtjsoft.www.myencryptiondemo.RSA;
 
 import java.io.ByteArrayOutputStream;
 import java.security.KeyFactory;
@@ -12,8 +12,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
-
-import cn.mtjsoft.www.myencryptiondemo.base64.Base64Util;
 
 /**
  * @author mtj

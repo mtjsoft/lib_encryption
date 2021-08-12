@@ -1,4 +1,4 @@
-package cn.mtjsoft.www.myencryptiondemo.aes;
+package cn.mtjsoft.www.myencryptiondemo.AES;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -14,7 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @desc 对称加密，加解密的密钥需要保持一致
  * @email mtjsoft3@gmail.com
  */
-public class AesUtil {
+public class AESUtil {
     /**
      * 算法/模式/填充                16字节加密后数据长度        不满16字节加密后长度
      * AES/CBC/NoPadding             16                          不支持
