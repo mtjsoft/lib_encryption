@@ -1,7 +1,5 @@
-package cn.mtjsoft.www.myencryptiondemo.SM2;
+package cn.mtjsoft.lib_encryption.SM2;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -13,6 +11,9 @@ import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
+
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
 /**
  * @author mtj
@@ -30,7 +31,7 @@ import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 public class SM2Util {
 
     static final byte MODE_NO_COMPRESS = 4;
-    private static final SM2Engine.Mode SM2_CRYPT_MODE;
+    private static final Mode SM2_CRYPT_MODE;
 
     private SM2Util() {
         throw new UnsupportedOperationException("util class cant be instantiation");

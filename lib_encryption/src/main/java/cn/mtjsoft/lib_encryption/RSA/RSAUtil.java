@@ -1,4 +1,4 @@
-package cn.mtjsoft.www.myencryptiondemo.RSA;
+package cn.mtjsoft.lib_encryption.RSA;
 
 import java.io.ByteArrayOutputStream;
 import java.security.KeyFactory;

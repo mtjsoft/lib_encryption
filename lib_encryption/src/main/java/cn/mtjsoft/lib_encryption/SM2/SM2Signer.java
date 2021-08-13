@@ -1,6 +1,5 @@
-package cn.mtjsoft.www.myencryptiondemo.SM2;
+package cn.mtjsoft.lib_encryption.SM2;
 
-import java.math.BigInteger;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.CryptoServicesRegistrar;
@@ -24,6 +23,8 @@ import org.bouncycastle.math.ec.ECMultiplier;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 import org.bouncycastle.util.encoders.Hex;
+
+import java.math.BigInteger;
 
 /**
  * @author mtj

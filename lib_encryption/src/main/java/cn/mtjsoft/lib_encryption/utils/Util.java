@@ -1,9 +1,12 @@
-package cn.mtjsoft.www.myencryptiondemo.utils;
+package cn.mtjsoft.lib_encryption.utils;
 
 import android.text.TextUtils;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
+
+import static java.lang.System.arraycopy;
 
 /**
  * @author mtj
@@ -102,5 +105,97 @@ public class Util {
         byte[] unpad = new byte[data.length - lastValue];
         System.arraycopy(data, 0, unpad, 0, unpad.length);
         return unpad;
+    }
+
+    /*
+     * 将两个byte数组拼接成一个byte数组
+     */
+    public static byte[] pinJie2(byte[] a, byte[] b) {
+        byte[] bytes = Arrays.copyOf(a, a.length + b.length);
+        System.arraycopy(b, 0, bytes, a.length, b.length);
+        return bytes;
+    }
+
+    /*
+     * 将三个byte数组拼接成一个byte数组
+     */
+    public static byte[] pinJie3(byte[] a, byte[] b, byte[] c) {
+        byte[] data = new byte[a.length + b.length + c.length];
+        arraycopy(a, 0, data, 0, a.length);
+        arraycopy(b, 0, data, a.length, b.length);
+        arraycopy(c, 0, data, a.length + b.length, c.length);
+        return data;
+    }
+
+    /**
+     * 变长拼接
+     *
+     * @param bytes 数据源
+     * @return 结果
+     */
+    public static byte[] pinJie(byte[]... bytes) {
+        int length = 0;
+        for (byte[] temp : bytes) {
+            length += temp.length;
+        }
+        byte[] totalData = new byte[length];
+        int tempLength = 0;
+        for (byte[] temp : bytes) {
+            // Object src,  int  srcPos, Object dest , int destPos, int length
+            arraycopy(temp, 0, totalData, tempLength, temp.length);
+            tempLength += temp.length;
+        }
+        return totalData;
+    }
+
+    /**
+     * 把一个整形int转换成byte数组 低位再前高位在后
+     */
+    public static byte[] intToByte4(int i) {
+        byte[] targets = new byte[4];
+        targets[3] = (byte) (i & 0xFF);
+        targets[2] = (byte) (i >> 8 & 0xFF);
+        targets[1] = (byte) (i >> 16 & 0xFF);
+        targets[0] = (byte) (i >> 24 & 0xFF);
+        return targets;
+    }
+
+    /**
+     * 把一个byte数组转换成 整形int
+     */
+    public static int byte4ToInt(byte[] bytes) {
+        int b0 = bytes[0] & 0xFF;
+        int b1 = bytes[1] & 0xFF;
+        int b2 = bytes[2] & 0xFF;
+        int b3 = bytes[3] & 0xFF;
+        return (b0 << 24) | (b1 << 16) | (b2 << 8) | b3;
+    }
+
+    /*
+     * 截取byte数组 count - 截取的长度
+     */
+    public static byte[] subBytes(byte[] src, int begin, int count) {
+        byte[] bs = new byte[count];
+        System.arraycopy(src, begin, bs, 0, count);
+        return bs;
+    }
+
+    /*
+     * 截取byte数组 count - 末尾下标
+     */
+    public static byte[] subBytes1(byte[] src, int begin, int count) {
+        byte[] bs = new byte[count - begin];
+        System.arraycopy(src, begin, bs, 0, count - begin);
+        return bs;
+    }
+
+    /**
+     * 填充128字节
+     */
+    public static byte[] zerofill128(byte[] bt) {
+        byte[] bytes = new byte[128];
+        Arrays.fill(bytes, 0, 112, (byte) 0x00);
+        System.arraycopy(bt, 0, bytes, 112, 16);
+        return bytes;
     }
 }

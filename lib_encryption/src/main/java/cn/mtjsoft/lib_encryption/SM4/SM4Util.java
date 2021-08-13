@@ -1,4 +1,4 @@
-package cn.mtjsoft.www.myencryptiondemo.SM4;
+package cn.mtjsoft.lib_encryption.SM4;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 

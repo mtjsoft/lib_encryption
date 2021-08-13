@@ -1,4 +1,4 @@
-package cn.mtjsoft.www.myencryptiondemo.BASE64;
+package cn.mtjsoft.lib_encryption.BASE64;
 
 /**
  * @author mtj

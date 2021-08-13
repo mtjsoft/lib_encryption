@@ -1,4 +1,4 @@
-package cn.mtjsoft.www.myencryptiondemo.AES;
+package cn.mtjsoft.lib_encryption.AES;
 
 import java.security.NoSuchAlgorithmException;
 

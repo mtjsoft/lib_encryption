@@ -1,2 +1,3 @@
+include ':lib_encryption'
 rootProject.name = "MyEncryptionDemo"
 include ':app'

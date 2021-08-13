@@ -1,4 +1,4 @@
-package cn.mtjsoft.www.myencryptiondemo.SM2;
+package cn.mtjsoft.lib_encryption.SM2;
 
 import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 import org.bouncycastle.asn1.x9.X9ECParameters;
@@ -43,7 +43,7 @@ class SM2 {
     }
 
     static SM2 Instance() {
-        return SM2.Holder.INSTANCE;
+        return Holder.INSTANCE;
     }
 
     ECPublicKeyParameters getPublicKeyParameters(byte[] publicKey) {

@@ -1,4 +1,4 @@
-package cn.mtjsoft.www.myencryptiondemo.SM3;
+package cn.mtjsoft.lib_encryption.SM3;
 
 import org.bouncycastle.crypto.digests.SM3Digest;
 
