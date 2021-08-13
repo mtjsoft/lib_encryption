@@ -8,17 +8,48 @@
     <EditText
         android:id="@+id/et_top"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="200dp"
         android:background="#f5f5f5"
         android:gravity="start"
-        android:hint="请输入待加密数据"
+        android:hint="待加密数据"
         android:padding="16dp"
         android:textColor="@color/black"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/btn_en"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="加密"
+        android:onClick="onClick"
+        app:layout_constraintEnd_toStartOf="@+id/btn_de"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_top" />
 
+    <Button
+        android:id="@+id/btn_de"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="解密"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_en"
+        app:layout_constraintTop_toBottomOf="@+id/et_top" />
 
+    <EditText
+        android:id="@+id/et_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#f5f5f5"
+        android:gravity="start"
+        android:hint="待解密数据"
+        android:padding="16dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_en"
+        app:layout_constraintVertical_weight="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

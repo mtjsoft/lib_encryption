@@ -13,34 +13,44 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(p0: View) {
         val intent = Intent(this, EncryptionActivity::class.java)
-        var type = EncryptionType.AES
+        var type = 0
+        var name = "AES"
         when (p0.id) {
             R.id.btn_aes -> {
-                type = EncryptionType.AES
+                type = 0
+                name = "AES"
             }
             R.id.btn_base64 -> {
-                type = EncryptionType.BASE64
+                type = 1
+                name = "BASE64"
             }
             R.id.btn_md5 -> {
-                type = EncryptionType.MD5
+                type = 2
+                name = "MD5"
             }
             R.id.btn_rsa -> {
-                type = EncryptionType.RSA
+                type = 3
+                name = "RSA"
             }
             R.id.btn_sha -> {
-                type = EncryptionType.SHA
+                type = 4
+                name = "SHA"
             }
             R.id.btn_sm2 -> {
-                type = EncryptionType.SM2
+                type = 5
+                name = "SM2"
             }
             R.id.btn_sm3 -> {
-                type = EncryptionType.SM3
+                type = 6
+                name = "SM3"
             }
             R.id.btn_sm4 -> {
-                type = EncryptionType.SM4
+                type = 7
+                name = "SM4"
             }
         }
         intent.putExtra("type", type)
+        intent.putExtra("name", name)
         startActivity(intent)
     }
 }
