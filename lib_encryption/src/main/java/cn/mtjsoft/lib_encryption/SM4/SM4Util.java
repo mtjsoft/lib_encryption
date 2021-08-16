@@ -6,7 +6,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import cn.mtjsoft.www.myencryptiondemo.utils.Util;
+import cn.mtjsoft.lib_encryption.utils.Util;
 
 /**
  * @author mtj

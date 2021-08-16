@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
-import cn.mtjsoft.www.myencryptiondemo.utils.Util;
+import cn.mtjsoft.lib_encryption.utils.Util;
 
 /**
  * @author mtj

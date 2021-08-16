@@ -8,7 +8,7 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import cn.mtjsoft.www.myencryptiondemo.utils.Util;
+import cn.mtjsoft.lib_encryption.utils.Util;
 
 /**
  * @author mtj
