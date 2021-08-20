@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
+    id 'com.github.dcendents.android-maven'
 }
+group='com.github.mtjsoft'
 
 android {
     compileSdkVersion 30
@@ -37,5 +39,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     api "org.bouncycastle:bcprov-jdk15on:1.69"
-    //    implementation "org.bouncycastle:bcpkix-jdk15on:1.65"
+    //    api "org.bouncycastle:bcpkix-jdk15on:1.65"
 }

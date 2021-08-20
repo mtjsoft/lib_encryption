@@ -79,6 +79,7 @@ public class ExampleUnitTest {
         String dataString = "我是测试rsaTest明文";
         System.out.println("明文：" + dataString);
         KeyPair key = RSAUtil.generateRSAKeyPair();
+        // 获取公私钥
         PrivateKey privateKey = key.getPrivate();
         PublicKey publicKey = key.getPublic();
         byte[] encryptByPublicKey = RSAUtil.encryptByPublicKey(dataString.getBytes(), publicKey);
@@ -108,31 +109,37 @@ public class ExampleUnitTest {
         String dataString = "我是测试sm2Test明文";
         System.out.println("明文：" + dataString);
 
-//        byte[][] key = SM2Util.generateKeyPair();
-//        byte[] publicKey = key[0];
-//        byte[] privateKey = key[1];
+        byte[] publicKey;
+        byte[] privateKey;
 
-        // 用手机号拼接32字节，当做私钥.
+        // 用用户手机号拼接32字节，生成固定的公私钥
         String phoneNumber = "18866668888".substring(1);
-        byte[] privateKey = Util.pinJie("94".getBytes(), (phoneNumber + phoneNumber + phoneNumber).getBytes());
-
-        System.out.println("私钥：" + privateKey.length + "  " + Base64Util.encode(privateKey));
+        privateKey = Util.pinJie("94".getBytes(), (phoneNumber + phoneNumber + phoneNumber).getBytes());
 
         boolean isValidPrivateKey = SM2Util.isValidPrivateKey(privateKey);
-        System.out.println("验证私钥：" + isValidPrivateKey);
+        System.out.println("验证固定的私钥：" + isValidPrivateKey);
+
         if (isValidPrivateKey) {
-            byte[] publicKey = SM2Util.getPublicKeyFromPrivateKey(privateKey);
-            System.out.println("公钥：" + Base64Util.encode(publicKey));
-
-            byte[] encryptByPublicKey = SM2Util.encrypt(publicKey, dataString.getBytes());
-            System.out.println("公钥加密明文：" + Util.byte2HexStr(encryptByPublicKey));
-            System.out.println("私钥解密：" + new String(SM2Util.decrypt(privateKey, encryptByPublicKey)));
-
-            byte[] sign = SM2Util.sign(privateKey, encryptByPublicKey);
-            System.out.println("签名：" + Util.byte2HexStr(sign));
-            boolean verifySign = SM2Util.verifySign(publicKey, encryptByPublicKey, sign);
-            System.out.println("验签：" + verifySign);
+            // 从固定私钥获取对应公钥
+            publicKey = SM2Util.getPublicKeyFromPrivateKey(privateKey);
+        } else {
+            // 获取随机的公私钥
+            byte[][] key = SM2Util.generateKeyPair();
+            publicKey = key[0];
+            privateKey = key[1];
         }
+
+        System.out.println("私钥：" + privateKey.length + "  " + Base64Util.encode(privateKey));
+        System.out.println("公钥：" + Base64Util.encode(publicKey));
+
+        byte[] encryptByPublicKey = SM2Util.encrypt(publicKey, dataString.getBytes());
+        System.out.println("公钥加密明文：" + Util.byte2HexStr(encryptByPublicKey));
+        System.out.println("私钥解密：" + new String(SM2Util.decrypt(privateKey, encryptByPublicKey)));
+
+        byte[] sign = SM2Util.sign(privateKey, encryptByPublicKey);
+        System.out.println("签名：" + Util.byte2HexStr(sign));
+        boolean verifySign = SM2Util.verifySign(publicKey, encryptByPublicKey, sign);
+        System.out.println("验签：" + verifySign);
     }
 
     /**
