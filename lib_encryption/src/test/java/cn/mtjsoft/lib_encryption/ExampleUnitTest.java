@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
 
 import cn.mtjsoft.lib_encryption.AES.AESUtil;
 import cn.mtjsoft.lib_encryption.BASE64.Base64Util;
@@ -113,9 +114,7 @@ public class ExampleUnitTest {
         byte[] privateKey;
 
         // 用用户手机号拼接32字节，生成固定的公私钥
-        String phoneNumber = "18866668888".substring(1);
-        privateKey = Util.pinJie("94".getBytes(), (phoneNumber + phoneNumber + phoneNumber).getBytes());
-
+        privateKey = SM2Util.getPrivateKeyFromString("16603837668");
         boolean isValidPrivateKey = SM2Util.isValidPrivateKey(privateKey);
         System.out.println("验证固定的私钥：" + isValidPrivateKey);
 
@@ -129,8 +128,8 @@ public class ExampleUnitTest {
             privateKey = key[1];
         }
 
-        System.out.println("私钥：" + privateKey.length + "  " + Base64Util.encode(privateKey));
-        System.out.println("公钥：" + Base64Util.encode(publicKey));
+        System.out.println("私钥：" + privateKey.length + "  " + Util.byte2HexStr(privateKey));
+        System.out.println("公钥：" + Util.byte2HexStr(publicKey));
 
         byte[] encryptByPublicKey = SM2Util.encrypt(publicKey, dataString.getBytes());
         System.out.println("公钥加密明文：" + Util.byte2HexStr(encryptByPublicKey));

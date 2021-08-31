@@ -15,6 +15,9 @@ import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+import cn.mtjsoft.lib_encryption.SM3.SM3Util;
+import cn.mtjsoft.lib_encryption.utils.Util;
+
 /**
  * @author mtj
  * @date 2021/8/12
@@ -29,8 +32,8 @@ import java.security.SecureRandom;
  * 目前，基于ECC的SM2证书普遍采用256位密钥长度，加密强度等同于3072位RSA证书，远高于业界普遍采用的2048位RSA证书。
  */
 public class SM2Util {
-
     static final byte MODE_NO_COMPRESS = 4;
+
     private static final Mode SM2_CRYPT_MODE;
 
     private SM2Util() {
@@ -45,10 +48,19 @@ public class SM2Util {
         return SM2.Instance().getPublicKeyFromPrivateKey(privateKey);
     }
 
+    /**
+     * 根据字符串，自定义生成私钥的规则
+     *
+     * @param string 用来生成私钥的字符
+     */
+    public static byte[] getPrivateKeyFromString(String string) {
+        return Util.pinJie(new byte[] { 0x03, 0x05 }, Util.subBytes(SM3Util.encryptInner(string.getBytes()), 2, 30));
+    }
+
     public static byte[][] generateKeyPair() {
         AsymmetricCipherKeyPair key = SM2.Instance().generateKeyPair();
-        ECPrivateKeyParameters ecpriv = (ECPrivateKeyParameters)key.getPrivate();
-        ECPublicKeyParameters ecpub = (ECPublicKeyParameters)key.getPublic();
+        ECPrivateKeyParameters ecpriv = (ECPrivateKeyParameters) key.getPrivate();
+        ECPublicKeyParameters ecpub = (ECPublicKeyParameters) key.getPublic();
         BigInteger privateKey = ecpriv.getD();
         ECPoint publicKey = ecpub.getQ();
         byte[] publicKeyEncoded = publicKey.getEncoded(false);
@@ -59,7 +71,7 @@ public class SM2Util {
         if (privateKeyEncoded.length == 33) {
             privateKeyEncoded = ByteUtils.subArray(privateKeyEncoded, 1, privateKeyEncoded.length);
         }
-        return new byte[][]{ publicKeyEncoded, privateKeyEncoded};
+        return new byte[][] { publicKeyEncoded, privateKeyEncoded };
     }
 
     public static byte[] encrypt(byte[] publicKey, byte[] data) {
@@ -92,7 +104,7 @@ public class SM2Util {
             if (encryptedData.length == 0) {
                 return new byte[0];
             } else {
-                encryptedData = ByteUtils.concatenate(new byte[]{4}, encryptedData);
+                encryptedData = ByteUtils.concatenate(new byte[] { 4 }, encryptedData);
                 ECPrivateKeyParameters privateKeyParameters = SM2.Instance().getPrivateKeyParameters(privateKey);
                 SM2Engine sm2Engine = new SM2Engine(SM2_CRYPT_MODE);
                 sm2Engine.init(false, privateKeyParameters);
