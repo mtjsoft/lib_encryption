@@ -80,3 +80,15 @@
 -dontshrink
 #保护泛型
 -keepattributes Signature
+#代码迭代优化的次数，默认5
+-optimizationpasses 5
+#混淆时不会产生形形色色的类名
+-dontusemixedcaseclassnames
+
+# 不混淆某个类（使用者可以看到类名）
+-keep class cn.mtjsoft.lib_encryption.**
+
+# 不混淆某个类中以 public 开始的方法（使用者可以看到该方法）
+-keepclassmembers class cn.mtjsoft.lib_encryption.** {
+    public *;
+}
