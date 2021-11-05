@@ -42,11 +42,11 @@ public class SM4Util {
     }
 
     public static byte[] encrypt(byte[] source, byte[] key) {
-        return encrypt(source, key, SM4_CBC_PKCS5, (byte[]) null);
+        return encrypt(source, key, SM4_CBC_PKCS5, new byte[16]);
     }
 
     public static byte[] decrypt(byte[] source, byte[] key) {
-        return decrypt(source, key, SM4_CBC_PKCS5, (byte[]) null);
+        return decrypt(source, key, SM4_CBC_PKCS5, new byte[16]);
     }
 
     public static byte[] encrypt(byte[] source, byte[] key, String mode, byte[] iv) {

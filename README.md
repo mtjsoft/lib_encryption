@@ -14,7 +14,7 @@ allprojects {
 
 ```kotlin
 dependencies {
-	        implementation 'com.github.mtjsoft:lib_encryption:1.1.0'
+	        implementation 'com.github.mtjsoft:lib_encryption:1.2.0'
 	}
 ```
 
@@ -98,27 +98,15 @@ public class ExampleUnitTest {
     /**
      * 国产SM2非对称加密
      */
+    @Test
     public void sm2Test() {
         String dataString = "我是测试sm2Test明文";
         System.out.println("明文：" + dataString);
 
-        byte[] publicKey;
-        byte[] privateKey;
-
-        // 用用户手机号拼接32字节，生成固定的公私钥
-        privateKey = SM2Util.getPrivateKeyFromString("16603837668");
-        boolean isValidPrivateKey = SM2Util.isValidPrivateKey(privateKey);
-        System.out.println("验证固定的私钥：" + isValidPrivateKey);
-
-        if (isValidPrivateKey) {
-            // 从固定私钥获取对应公钥
-            publicKey = SM2Util.getPublicKeyFromPrivateKey(privateKey);
-        } else {
-            // 获取随机的公私钥
-            byte[][] key = SM2Util.generateKeyPair();
-            publicKey = key[0];
-            privateKey = key[1];
-        }
+        // 获取随机的公私钥
+        byte[][] key = SM2Util.generateKeyPair();
+        byte[] publicKey = key[0];
+        byte[] privateKey = key[1];
 
         System.out.println("私钥：" + privateKey.length + "  " + Util.byte2HexStr(privateKey));
         System.out.println("公钥：" + Util.byte2HexStr(publicKey));

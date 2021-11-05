@@ -2,9 +2,9 @@ package cn.mtjsoft.lib_encryption.utils;
 
 import android.text.TextUtils;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Random;
 
 import static java.lang.System.arraycopy;
 
@@ -72,7 +72,7 @@ public class Util {
      */
     public static byte[] genRandomBytes(int len) {
         byte[] seed = new byte[len];
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         random.nextBytes(seed);
         return seed;
     }
