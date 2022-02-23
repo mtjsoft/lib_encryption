@@ -31,7 +31,7 @@ import java.security.SecureRandom;
 public class SM2Util {
     static final byte MODE_NO_COMPRESS = 4;
 
-    private static final Mode SM2_CRYPT_MODE;
+    private static final Mode SM2_CRYPT_MODE = Mode.C1C3C2;
 
     private SM2Util() {
         throw new UnsupportedOperationException("util class cant be instantiation");
@@ -74,6 +74,7 @@ public class SM2Util {
 
                 try {
                     bytes = sm2Engine.processBlock(source, 0, source.length);
+                    // 密文数据头部一位表示压缩模式，我们仅使用不压缩模式 0x04，因此移除该位
                     return ByteUtils.subArray(bytes, 1);
                 } catch (InvalidCipherTextException var7) {
                     var7.printStackTrace();
@@ -126,9 +127,5 @@ public class SM2Util {
         signer.init(false, publicKeyParameters);
         signer.update(sourceData, 0, sourceData.length);
         return signer.verifySignature(signData);
-    }
-
-    static {
-        SM2_CRYPT_MODE = Mode.C1C3C2;
     }
 }

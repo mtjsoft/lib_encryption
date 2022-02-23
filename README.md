@@ -14,7 +14,7 @@ allprojects {
 
 ```kotlin
 dependencies {
-	        implementation 'com.github.mtjsoft:lib_encryption:1.3.0'
+	        implementation 'com.github.mtjsoft:lib_encryption:1.4.0'
 	}
 ```
 

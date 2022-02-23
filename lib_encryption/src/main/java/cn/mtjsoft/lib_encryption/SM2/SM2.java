@@ -48,7 +48,7 @@ class SM2 {
 
     ECPublicKeyParameters getPublicKeyParameters(byte[] publicKey) {
         if (publicKey.length == 64) {
-            publicKey = ByteUtils.concatenate(new byte[] { 4 }, publicKey);
+            publicKey = ByteUtils.concatenate(new byte[] { SM2Util.MODE_NO_COMPRESS }, publicKey);
         }
 
         ECPoint q = this.mCurve.decodePoint(publicKey);
@@ -56,10 +56,6 @@ class SM2 {
     }
 
     ECPrivateKeyParameters getPrivateKeyParameters(byte[] privateKey) {
-        if (privateKey.length == 32) {
-            privateKey = ByteUtils.concatenate(new byte[0], privateKey);
-        }
-
         BigInteger d = new BigInteger(1, privateKey);
         return new ECPrivateKeyParameters(d, this.mDomainParams);
     }
@@ -69,7 +65,7 @@ class SM2 {
     }
 
     byte[] getPublicKeyFromPrivateKey(byte[] privateKey) {
-        BigInteger d = new BigInteger(privateKey);
+        BigInteger d = new BigInteger(1, privateKey);
         ECPoint Q = (new FixedPointCombMultiplier()).multiply(this.mECPoint_G, d);
         byte[] publicKeyEncoded = Q.getEncoded(false);
         if (publicKeyEncoded.length == 65) {
@@ -80,19 +76,9 @@ class SM2 {
     }
 
     boolean isValidPrivateKey(byte[] privateKey) {
-        BigInteger d = new BigInteger(privateKey);
+        BigInteger d = new BigInteger(1, privateKey);
         BigInteger n = this.mDomainParams.getN();
-        int nBitLength = n.bitLength();
-        int minWeight = nBitLength >>> 2;
-        if (d.compareTo(BigInteger.ONE) >= 0 && d.compareTo(n) < 0) {
-            if (WNafUtil.getNafWeight(d) < minWeight) {
-                return false;
-            } else {
-                return d.bitLength() <= nBitLength;
-            }
-        } else {
-            return false;
-        }
+        return d.compareTo(BigInteger.ONE) >= 0 && d.compareTo(n) < 0;
     }
 
     private static final class Holder {
