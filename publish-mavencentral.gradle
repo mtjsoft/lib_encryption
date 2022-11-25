@@ -1,0 +1,151 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+//第 1 处
+ext["PUBLISH_VERSION"] = '' //发布的版本
+ext["PUBLISH_GROUP_ID"] = ''  //分组ID
+ext["PUBLISH_ARTIFACT_ID"] = '' //
+ext["signing.keyId"] = '' //签名的密钥后8位
+ext["signing.password"] = ''  //签名设置的密码
+ext["signing.secretKeyRingFile"] = '' //生成的secring.gpg文件目录
+ext["ossrhUsername"] = ''  //sonatype用户名
+ext["ossrhPassword"] = ''  //sonatype密码
+// 遍历赋值
+File secretPropsFile = project.rootProject.file('local.properties')
+if (secretPropsFile.exists()) {
+    println "Found secret props file, loading props"
+    Properties p = new Properties()
+    p.load(new FileInputStream(secretPropsFile))
+    p.each { name, value ->
+        ext[name] = value
+    }
+} else {
+    println "No props file, loading env vars"
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            // The repository to publish to, Sonatype/MavenCentral
+            maven {
+                //第 6 处  推送至远端的中央仓库，一旦发布中央仓库版本，旧版本无法回撤
+                //仓库默认不支持Https,所有这里设置成false.
+//                allowInsecureProtocol = false
+                name = PUBLISH_ARTIFACT_ID
+                // 中央 release 仓库： "https://s01.oss.sonatype.org/content/repositories/releases"
+                // 中央 snapshot 仓库："https://s01.oss.sonatype.org/content/repositories/snapshots"
+                // 暂存库             "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+                // The username and password we've fetched earlier
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
+                }
+            }
+            maven {
+                //第 6 处  推送至本地仓库
+                //仓库默认不支持Https,所有这里设置成false.
+//                allowInsecureProtocol = false
+                name = 'Local'
+                url = uri('../ZLocalRepo')
+            }
+        }
+        publications {
+            release(MavenPublication) {
+                println("publish-maven Log-------> PUBLISH_GROUP_ID: $PUBLISH_GROUP_ID; PUBLISH_ARTIFACT_ID: $PUBLISH_ARTIFACT_ID; PUBLISH_VERSION: $PUBLISH_VERSION")
+                // The coordinates of the library, being set from variables that
+
+                //第 2 处
+                groupId PUBLISH_GROUP_ID
+                artifactId PUBLISH_ARTIFACT_ID
+                version PUBLISH_VERSION
+
+                //添加这个，否则aar文件不上传
+//                from components.release
+                artifact("$buildDir/outputs/aar/cshtreadcard-release.aar")
+//                artifact androidSourcesJar
+
+                // Self-explanatory metadata for the most part
+                pom {
+                    //第 3 处
+                    name = PUBLISH_ARTIFACT_ID
+                    description = '' //项目描述
+                    url = 'https://github.com/mtjsoft/ReadCardSdk' //项目github链接
+                    licenses {
+                        license {
+                            //协议类型，一般默认Apache License2.0的话不用改：
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            //第 4 处
+                            id = 'mtjsoft' //你的sonatype用户名
+                            name = 'mtjsoft' //你的sonatype用户名
+                            email = 'mtjsoft3@gmail.com' //你的sonatype注册邮箱
+                        }
+                    }
+                    // Version control info, if you're using GitHub, follow the format as seen here
+                    scm {
+                        //第 5 处
+                        //修改成你的Git地址：
+                        connection = 'scm:git@github.com:mtjsoft/ReadCardSdk.git'
+                        developerConnection = 'scm:git@github.com:mtjsoft/ReadCardSdk.git'
+                        //分支地址：
+                        url = 'https://github.com/mtjsoft/ReadCardSdk'
+                    }
+                    // A slightly hacky fix so that your POM will include any transitive dependencies
+                    // that your library builds upon
+                    withXml {
+                        def dependenciesNode = asNode().appendNode('dependencies')
+
+                        project.configurations.implementation.allDependencies.each {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    signing {
+        sign publishing.publications
+//        sign publishing.publications.release
+//        sign configurations.archives
+    }
+}
+
+
+// 生成文档注释
+//task androidJavadocs(type: Javadoc) {
+//    // 设置源码所在的位置
+//    source = android.sourceSets.main.java.srcDirs
+//}
+//
+//// 将文档打包成jar,生成javadoc.jar
+//task androidJavadocsJar(type: Jar) {
+//    // 指定文档名称
+//    archiveClassifier.set('javadoc')
+//    from androidJavadocs.destinationDir
+//}
+//
+//// 将源码打包 ，生成sources.jar
+//task androidSourcesJar(type: Jar) {
+//    archiveClassifier.set('sources')
+//    from android.sourceSets.main.java.srcDirs
+//
+//    exclude "**/R.class"
+//    exclude "**/BuildConfig.class"
+//}
+//
+////配置需要上传到maven仓库的文件
+//artifacts {
+//    archives androidSourcesJar //将源码打包进aar,这样使用方可以看到方法注释.
+//    archives androidJavadocsJar //将注释打包进aar
+//}

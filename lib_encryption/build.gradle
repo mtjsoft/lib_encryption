@@ -4,6 +4,8 @@ plugins {
 }
 group = 'com.github.mtjsoft'
 
+apply from: '../publish-mavencentral.gradle'
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
